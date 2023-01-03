@@ -24,9 +24,9 @@ def get_licenses():
 
 if __name__ == "__main__":
     with open("cyd-bom.json", "r") as file:
-        cyd = json.loads(file.read())
+        sbom = json.loads(file.read())
 
     license_list = get_licenses()
     cyclonedx_schema = load_cyclonedx_schema()
-    result = assess_sbom(cyd, license_list, cyclonedx_schema)
+    result = assess_sbom(sbom, license_list, cyclonedx_schema)
 
