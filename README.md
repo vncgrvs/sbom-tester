@@ -38,6 +38,20 @@ with open("<your-sbom.json>", "r") as file:
 python main.py
 ```
 
+4. Example output
+```python
+Results 
+
+Found 301 purls.
+301 / 301 (100.0%) purls are valid.
+293 / 301 (97.0%) contain SPDX-compliant license ids.
+SBOM is schema compliant.
+SBOM does not contain OS information.
+The SBOM generation tool was found: [{'vendor': 'CycloneDX', 'name': 'cyclonedx-gradle-plugin', 'version': '1.7.3'}].
+The SBOM contains a dependency tree.
+The overall SBOM quality score is: 0.895/1.
+
+```
 
 Note the `./test` folder contains CycloneDX SBOMs created for the [vsm-webshop project](https://github.com/leanix-public/vsm-webshop-demo) with the [CycloneDX python plugin](https://github.com/CycloneDX/cyclonedx-python), [Syft](https://github.com/anchore/syft) and [Trivy](https://github.com/aquasecurity/trivy). Feel free to play with those.
 
