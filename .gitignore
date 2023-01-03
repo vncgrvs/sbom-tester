@@ -1,0 +1,10 @@
+__pycache__
+*.ipynb_checkpoints
+env
+*.ipynb
+licenses.json
+cyd-bom.json
+sbom-syft.json
+sbom-trivy.json
+result-schema.json
+
