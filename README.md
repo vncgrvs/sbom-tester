@@ -38,5 +38,8 @@ with open("<your-sbom.json>", "r") as file:
 python main.py
 ```
 
+
+Note the `./test` folder contains CycloneDX SBOMs created for the [vsm-webshop project](https://github.com/leanix-public/vsm-webshop-demo) with the [CycloneDX python plugin](https://github.com/CycloneDX/cyclonedx-python), [Syft](https://github.com/anchore/syft) and [Trivy](https://github.com/aquasecurity/trivy). Feel free to play with those.
+
 ### Contact
 Feel free to contact me for any queries under vincent.groves@leanix.net .
