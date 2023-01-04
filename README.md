@@ -1,4 +1,5 @@
 ## SBOM-Tester
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 
 This a simple script that takes a [CycloneDX SBOM](https://cyclonedx.org/) in JSON format and analyses it against certain quality factors. Namely,
 1. Correctness and presence of [PURLs](https://github.com/package-url/purl-spec).
