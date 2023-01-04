@@ -1,4 +1,4 @@
-## Bom-Tester
+## SBOM-Tester
 
 This a simple script that takes a [CycloneDX SBOM](https://cyclonedx.org/) in JSON format and analyses it against certain quality factors. Namely,
 1. Correctness and presence of [PURLs](https://github.com/package-url/purl-spec).
