@@ -96,11 +96,12 @@ def has_extraction_tool(sbom):
 
     tools = []
 
-    if "tools" in sbom['metadata']:
-        if sbom['metadata']['tools']:
-            has_tool = True
-            for tool in sbom['metadata']['tools']:
-                tools.append(tool)
+    if "metadata" in sbom:
+        if "tools" in sbom['metadata']:
+            if sbom['metadata']['tools']:
+                has_tool = True
+                for tool in sbom['metadata']['tools']:
+                    tools.append(tool)
 
     return has_tool, tools
 
@@ -117,7 +118,7 @@ def has_operating_systems(sbom):
     return has_operating_systems, operating_systems_found
 
 
-def validateSBOM(sbom, schema):
+def validate_sbom(sbom, schema):
     try:
         validate(instance=sbom, schema=schema)
     except ValidationError as err:
@@ -249,7 +250,7 @@ def assess_sbom(sbom, license_list, schema):
         8. presence of licenses
      """
 
-    is_sbom_valid = validateSBOM(sbom, schema)
+    is_sbom_valid = validate_sbom(sbom, schema)
     valid_purls, invalid_purls, total_purls = validate_purls(sbom)
     temp_license = validate_licenses(sbom, license_list)
     license_check = summarize_license_analysis(temp_license)
