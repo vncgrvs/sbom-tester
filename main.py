@@ -23,7 +23,7 @@ def get_licenses():
 
 
 if __name__ == "__main__":
-    with open("cyd-bom.json", "r") as file:
+    with open("test/ort-bom.json", "r") as file:
         sbom = json.loads(file.read())
 
     license_list = get_licenses()
