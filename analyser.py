@@ -96,11 +96,12 @@ def has_extraction_tool(sbom):
 
     tools = []
 
-    if "tools" in sbom['metadata']:
-        if sbom['metadata']['tools']:
-            has_tool = True
-            for tool in sbom['metadata']['tools']:
-                tools.append(tool)
+    if "metadata" in sbom:
+        if "tools" in sbom['metadata']:
+            if sbom['metadata']['tools']:
+                has_tool = True
+                for tool in sbom['metadata']['tools']:
+                    tools.append(tool)
 
     return has_tool, tools
 
