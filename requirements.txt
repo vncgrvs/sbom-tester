@@ -32,7 +32,7 @@ six==1.16.0
 sortedcontainers==2.4.0
 toml==0.10.2
 typing_extensions==4.2.0
-uamqp==1.5.3
+uamqp==1.6.3
 urllib3==1.26.9
 Werkzeug==2.2.2
 zipp==3.11.0
