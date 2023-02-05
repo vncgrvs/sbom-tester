@@ -29,15 +29,23 @@ def get_sboms(path):
     target_dir = Path(path)
 
     sboms_files = list()
-    if not target_dir.exists():
-        print("The target directory doesn't exist")
-        raise SystemExit(1)
 
-    for file in target_dir.iterdir():
-        file_name = os.path.splitext(file)
+
+    if os.path.isfile(target_dir):
+        file_name = os.path.splitext(target_dir)
         file_extension = file_name[1]
         if file_extension == ".json":
-            sboms_files.append(f"{file}")
+            sboms_files.append(f"{target_dir}")
+    else:
+        if not target_dir.exists():
+            print("The target directory doesn't exist")
+            raise SystemExit(1)
+
+        for file in target_dir.iterdir():
+            file_name = os.path.splitext(file)
+            file_extension = file_name[1]
+            if file_extension == ".json":
+                sboms_files.append(f"{file}")
     
     return sboms_files
 
@@ -48,13 +56,15 @@ if __name__ == "__main__":
                               description='Tests an SBOM for different quality measurements')
 
     cli.add_argument("path")
+    cli.add_argument("--report", help="generate output report",
+                    action="store_true")
 
     args = cli.parse_args()
     license_list = get_licenses()
     cyclonedx_schema = load_cyclonedx_schema()
 
     sboms=get_sboms(args.path)
-    assess_sboms(sboms,license_list,cyclonedx_schema)
+    assess_sboms(sboms,license_list,cyclonedx_schema, args.report)
 
     
     

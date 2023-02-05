@@ -369,7 +369,7 @@ def assess_sbom(sbom, license_list, schema):
     return report
 
 
-def assess_sboms(sboms, license_list, schema):
+def assess_sboms(sboms, license_list, schema,generate_report):
 
     reports = list()
 
@@ -384,6 +384,7 @@ def assess_sboms(sboms, license_list, schema):
 
         reports.append(new_report)
 
-    print("generating report...")
-    with open("report.json", "w") as out:
-        out.write(json.dumps(reports, indent=2))
+    if generate_report:
+        print("generating report...")
+        with open("report.json", "w") as out:
+            out.write(json.dumps(reports, indent=2))
