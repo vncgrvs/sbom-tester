@@ -25,32 +25,38 @@ source env/bin/activate
 
 ```
 
-2. load a JSON CycloneDX file in `main.py`
+2. Run CLI and generate a report
+you may pass a directory with many SBOM files or a single file.
 
 ```python
-with open("<your-sbom.json>", "r") as file:
-        sbom = json.loads(file.read())
+python main.py test/ --report 
 
 ```
 
-
-3. Run `main.py`
-```bash
-python main.py
-```
-
-4. Example output
-```python
-Results 
-
-Found 301 purls.
-301 / 301 (100.0%) purls are valid.
-293 / 301 (97.0%) contain SPDX-compliant license ids.
-SBOM is schema compliant.
-SBOM does not contain OS information.
-The SBOM generation tool was found: [{'vendor': 'CycloneDX', 'name': 'cyclonedx-gradle-plugin', 'version': '1.7.3'}].
-The SBOM contains a dependency tree.
-The overall SBOM quality score is: 0.895/1.
+4. Example report
+```json
+[
+  {
+    "filename": "test/cyclonedx-bom.json",
+    "purls": 378,
+    "percentage_valid_purl": 1.0,
+    "licenses": {
+      "valid_licenses": 372,
+      "percentage_valid_license_id": 0.98
+    },
+    "is_schema_compliant": true,
+    "operating_system": {
+      "has_os": false,
+      "os_found": null
+    },
+    "sbom_tool": {
+      "has_tool": true,
+      "tools": []
+    },
+    "has_dependency_tree": true,
+    "quality_score": 0.895
+  }
+]
 
 ```
 

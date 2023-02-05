@@ -1,0 +1,22 @@
+[
+  {
+    "filename": "test/cyclonedx-bom.json",
+    "purls": 378,
+    "percentage_valid_purl": 1.0,
+    "licenses": {
+      "valid_licenses": 372,
+      "percentage_valid_license_id": 0.98
+    },
+    "is_schema_compliant": true,
+    "operating_system": {
+      "has_os": false,
+      "os_found": null
+    },
+    "sbom_tool": {
+      "has_tool": true,
+      "tools": []
+    },
+    "has_dependency_tree": true,
+    "quality_score": 0.895
+  }
+]
