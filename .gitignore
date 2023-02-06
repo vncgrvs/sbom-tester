@@ -8,4 +8,8 @@ sbom-syft.json
 sbom-trivy.json
 result-schema.json
 *.DS_Store
+<<<<<<< HEAD
 report_schema.json
+=======
+generatedSboms/
+>>>>>>> 3798003 (test)
