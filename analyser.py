@@ -25,19 +25,27 @@ def validate_purls(sbom):
     valid_purls = []
     invalid_purls = []
 
-    for obj in sbom['components']:
+    if "components" in sbom:
+        has_purls = True
 
-        if obj['type'] == "library":
-            try:
-                purl = obj['purl']
-                stripped_purl = strip_purl(purl)
-                valid_purls.append(stripped_purl)
-            except Exception as e:
-                invalid_purls.append(purl)
+        for obj in sbom['components']:
 
-    total_purls = len(valid_purls) + len(invalid_purls)
+            if obj['type'] == "library":
+                try:
+                    purl = obj['purl']
+                    stripped_purl = strip_purl(purl)
+                    valid_purls.append(stripped_purl)
+                except Exception as e:
+                    invalid_purls.append(purl)
 
-    return valid_purls, invalid_purls, total_purls
+        total_purls = len(valid_purls) + len(invalid_purls)
+    else:
+        total_purls = 0
+        valid_purls = None
+        invalid_purls = None
+        has_purls = False
+
+    return valid_purls, invalid_purls, total_purls, has_purls
 
 
 def grade_sbom(has_dependency_tree, valid_bom, has_os, perc_valid_purls, perc_has_valid_license):
@@ -142,6 +150,9 @@ def validate_licenses(sbom, license_list):
 
     purls = []
 
+    number_purls = len(sbom['components'])
+    counter_no_lic = 0
+
     for lib in sbom['components']:
 
         if lib["type"] == "library":
@@ -181,6 +192,7 @@ def validate_licenses(sbom, license_list):
                 res['invalid_licenses'] = invalid_license_ids
                 res['valid_licenses'] = valid_license_ids
                 res['has_licenses'] = True
+                has_licenses = True
 
                 purls.append(res)
 
@@ -191,9 +203,12 @@ def validate_licenses(sbom, license_list):
                 res['invalid_licenses'] = []
                 res['valid_licenses'] = []
                 res['has_licenses'] = False
+                counter_no_lic += 1
                 purls.append(res)
 
-    return purls
+    if counter_no_lic == number_purls:
+        has_licenses = False
+    return purls, has_licenses
 
 
 def summarize_license_analysis(analysis):
@@ -234,6 +249,45 @@ def summarize_license_analysis(analysis):
     return output
 
 
+def print_results(report):
+
+    if report['has_purls']:
+        print("Results \n")
+        print(f"Found {report['purls']} purls.")
+        print(f"{report['percentage_valid_purl'] * 100}% purls are valid.")
+
+        print(
+            f"{report['licenses']['percentage_valid_license_id'] * 100}% contain SPDX-compliant license ids.")
+
+        if report['is_schema_compliant']:
+            print("SBOM is schema compliant.")
+        else:
+            print("SBOM is not CycloneDX schema (v1.4) compliant.")
+
+        if report['operating_system']['has_os']:
+            print(
+                f"SBOM contains OS information: {report['operating_system']['os_found']}")
+        else:
+            print("SBOM does not contain OS information.")
+
+        if report['sbom_tool']['has_tool']:
+            print(
+                f"SBOM generation tool are present: {report['sbom_tool']['tools']}")
+        else:
+            print("No SBOM generation tool was found.")
+
+        if report['has_dependency_tree']:
+            print("The SBOM contains a dependency tree.")
+        else:
+            print("The SBOM does not contain a dependency tree.")
+
+        print(f"The overall SBOM quality score is: {report['quality_score']}/1.")
+
+    else:
+        print("Results \n")
+        print("SBOM has no purls.")
+
+
 def assess_sbom(sbom, license_list, schema):
     """
         checks
@@ -249,22 +303,31 @@ def assess_sbom(sbom, license_list, schema):
      """
 
     is_sbom_valid = validate_sbom(sbom, schema)
-    valid_purls, invalid_purls, total_purls = validate_purls(sbom)
-    temp_license = validate_licenses(sbom, license_list)
-    license_check = summarize_license_analysis(temp_license)
-    has_dep_tree = has_dependency_tree(sbom)
-    has_os, operating_systems_found = has_operating_systems(sbom)
-    has_tool, tools = has_extraction_tool(sbom)
+    valid_purls, invalid_purls, total_purls, has_purls = validate_purls(sbom)
+    if has_purls:
+        temp_license, has_licenses = validate_licenses(sbom, license_list)
+        license_check = summarize_license_analysis(temp_license)
+        has_dep_tree = has_dependency_tree(sbom)
+        has_os, operating_systems_found = has_operating_systems(sbom)
+        has_tool, tools = has_extraction_tool(sbom)
 
-    perc_valid_purl = round(len(valid_purls)/total_purls, 2)
-    perc_has_license = round(
-        license_check['no_purls_w_license']/total_purls, 2)
-    perc_has_valid_license = round(
-        license_check['no_valid_license_w_license']/total_purls, 2)
+        perc_valid_purl = round(len(valid_purls)/total_purls, 2)
+        perc_has_license = round(
+            license_check['no_purls_w_license']/total_purls, 2)
+        perc_has_valid_license = round(
+            license_check['no_valid_license_w_license']/total_purls, 2)
 
-    score = grade_sbom(has_dep_tree, is_sbom_valid, has_os,
-                       perc_valid_purl, perc_has_valid_license)
+        score = grade_sbom(has_dep_tree, is_sbom_valid, has_os,
+                           perc_valid_purl, perc_has_valid_license)
+    else:
+        has_os = False
+        has_tool = False
+        score = None
+        perc_valid_purl = 0
+        has_licenses = False
+        has_dep_tree = False
 
+    
     if has_os:
         os_found = list()
         for os in operating_systems_found:
@@ -313,41 +376,75 @@ def assess_sbom(sbom, license_list, schema):
     else:
         tools_found = None
 
-    report = {
-        "purls": total_purls,
-        "percentage_valid_purl": round(perc_valid_purl, 2),
-        "licenses": {
-            "valid_licenses": license_check['no_valid_license_w_license'],
-            "percentage_valid_license_id": round(perc_has_valid_license, 2)
+    if has_purls:
+        report = {
+            "purls": total_purls,
+            "has_purls": has_purls,
+            "percentage_valid_purl": round(perc_valid_purl, 2),
+            "licenses": {
+                "has_license": has_licenses,
+                "valid_licenses": license_check['no_valid_license_w_license'],
+                "percentage_valid_license_id": round(perc_has_valid_license, 2)
 
-        },
-        "is_schema_compliant": is_sbom_valid,
-        "operating_system": {
-            "has_os": has_os,
-            "os_found": os_found
-        },
-        "sbom_tool": {
-            "has_tool": has_tool,
-            "tools": tools_found
-        },
-        "has_dependency_tree": has_dep_tree,
-        "quality_score": score
-    }
+            },
+            "is_schema_compliant": is_sbom_valid,
+            "operating_system": {
+                "has_os": has_os,
+                "os_found": os_found
+            },
+            "sbom_tool": {
+                "has_tool": has_tool,
+                "tools": tools_found
+            },
+            "has_dependency_tree": has_dep_tree,
+            "quality_score": score
+        }
+    elif has_purls and has_licenses:
+        report = {
+            "purls": total_purls,
+            "has_purls": has_purls,
+            "percentage_valid_purl": round(perc_valid_purl, 2),
+            "licenses": {
+                "has_license": has_licenses,
+                "valid_licenses": license_check['no_valid_license_w_license'],
+                "percentage_valid_license_id": round(perc_has_valid_license, 2)
 
-    print("Results \n")
-    print(f"Found {total_purls} purls.")
-    print(f"{len(valid_purls)} / {total_purls} ({perc_valid_purl * 100}%) purls are valid.")
-
-    if license_check['no_purls_w_license'] != 0:
-        print(
-            f"{license_check['no_valid_license_w_license']} / {total_purls} ({perc_has_valid_license * 100}%) contain SPDX-compliant license ids.")
+            },
+            "is_schema_compliant": is_sbom_valid,
+            "operating_system": {
+                "has_os": has_os,
+                "os_found": os_found
+            },
+            "sbom_tool": {
+                "has_tool": has_tool,
+                "tools": tools_found
+            },
+            "has_dependency_tree": has_dep_tree,
+            "quality_score": score
+        }
     else:
-        print(f"0/{total_purls} have license information.")
+        report = {
+            "purls": total_purls,
+            "has_purls": has_purls,
+            "percentage_valid_purl": 0.0,
+            "licenses": {
+                "has_license": has_licenses,
+                "valid_licenses": None,
+                "percentage_valid_license_id": None
 
-    if is_sbom_valid:
-        print("SBOM is schema compliant.")
-    else:
-        print("SBOM is not CycloneDX schema (v1.4) compliant.")
+            },
+            "is_schema_compliant": is_sbom_valid,
+            "operating_system": {
+                "has_os": has_os,
+                "os_found": None
+            },
+            "sbom_tool": {
+                "has_tool": has_tool,
+                "tools": None
+            },
+            "has_dependency_tree": has_dep_tree,
+            "quality_score": None
+        }
 
     if has_os:
         print(f"SBOM contains OS information.")
@@ -366,10 +463,13 @@ def assess_sbom(sbom, license_list, schema):
 
     print(f"The overall SBOM quality score is: {score}/1.")
 
+    
+    print_results(report)
+
     return report
 
 
-def assess_sboms(sboms, license_list, schema,generate_report):
+def assess_sboms(sboms, license_list, schema, generate_report):
 
     reports = list()
 
@@ -377,6 +477,7 @@ def assess_sboms(sboms, license_list, schema,generate_report):
 
         with open(sbom_path, "r") as file:
             sbom = json.loads(file.read())
+        print(f"Analysing {sbom_path}")
         report_raw = assess_sbom(sbom, license_list, schema)
         new_report = dict()
         new_report['filename'] = sbom_path
