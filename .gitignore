@@ -9,3 +9,4 @@ sbom-trivy.json
 result-schema.json
 *.DS_Store
 report_schema.json
+generatedSboms/
