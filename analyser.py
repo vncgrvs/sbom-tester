@@ -3,6 +3,7 @@ import os
 import json
 from jsonschema import validate
 from jsonschema import ValidationError
+from tqdm import tqdm
 
 
 def strip_purl(purl):
@@ -473,7 +474,7 @@ def assess_sboms(sboms, license_list, schema, generate_report):
 
     reports = list()
 
-    for sbom_path in sboms:
+    for sbom_path in tqdm(sboms):
 
         with open(sbom_path, "r") as file:
             sbom = json.loads(file.read())

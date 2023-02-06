@@ -1,9 +1,10 @@
-from analyser import assess_sboms, assess_sbom
+from analyser import assess_sboms
 import json
 import os
 import urllib.request
 from pathlib import Path
 import argparse
+
 
 
 def load_cyclonedx_schema():
