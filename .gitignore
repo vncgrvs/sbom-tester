@@ -8,5 +8,5 @@ sbom-syft.json
 sbom-trivy.json
 result-schema.json
 *.DS_Store
-generatedSboms/
+generatedSboms*/
 report.json
