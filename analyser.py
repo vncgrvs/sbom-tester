@@ -1,5 +1,4 @@
 from packageurl import PackageURL
-import os
 import json
 from jsonschema import validate
 from jsonschema import ValidationError
@@ -282,14 +281,15 @@ def print_results(report):
         else:
             print("The SBOM does not contain a dependency tree.")
 
-        print(f"The overall SBOM quality score is: {report['quality_score']}/1.")
+        print(
+            f"The overall SBOM quality score is: {report['quality_score']}/1.")
 
     else:
         print("Results \n")
         print("SBOM has no purls.")
 
 
-def assess_sbom(sbom, license_list, schema):
+def assess_sbom(sbom, license_list, schema, verbose):
     """
         checks
         1. valid CycloneDX 1.4 schema
@@ -328,7 +328,6 @@ def assess_sbom(sbom, license_list, schema):
         has_licenses = False
         has_dep_tree = False
 
-    
     if has_os:
         os_found = list()
         for os in operating_systems_found:
@@ -447,39 +446,25 @@ def assess_sbom(sbom, license_list, schema):
             "quality_score": None
         }
 
-    if has_os:
-        print(f"SBOM contains OS information.")
-    else:
-        print("SBOM does not contain OS information.")
-
-    if has_tool:
-        print(f"SBOM generation tool are present.")
-    else:
-        print("No SBOM generation tool was found.")
-
-    if has_dep_tree:
-        print("The SBOM contains a dependency tree.")
-    else:
-        print("The SBOM does not contain a dependency tree.")
-
-    print(f"The overall SBOM quality score is: {score}/1.")
-
-    
-    print_results(report)
+    if verbose:
+        print_results(report)
 
     return report
 
 
-def assess_sboms(sboms, license_list, schema, generate_report):
+def assess_sboms(sboms, license_list, schema, generate_report, verbose=False):
 
     reports = list()
 
-    for sbom_path in tqdm(sboms):
+    for sbom_path in (pbar := tqdm(sboms)):
+        pbar.set_description(f"Processing {sbom_path}")
 
         with open(sbom_path, "r") as file:
             sbom = json.loads(file.read())
-        print(f"Analysing {sbom_path}")
-        report_raw = assess_sbom(sbom, license_list, schema)
+        if verbose:
+            print(f"Analysing {sbom_path}")
+
+        report_raw = assess_sbom(sbom, license_list, schema, verbose)
         new_report = dict()
         new_report['filename'] = sbom_path
         new_report.update(report_raw)
@@ -487,6 +472,8 @@ def assess_sboms(sboms, license_list, schema, generate_report):
         reports.append(new_report)
 
     if generate_report:
-        print("generating report...")
+        
         with open("report.json", "w") as out:
             out.write(json.dumps(reports, indent=2))
+        
+        tqdm.write(f"generated report at report.json.")

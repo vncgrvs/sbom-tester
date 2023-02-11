@@ -1,9 +1,60 @@
 [
   {
-    "filename": "test/cyclonedx-bom.json",
-    "purls": 378,
+    "filename": "test/ort-bom.json",
+    "purls": 114,
+    "has_purls": true,
     "percentage_valid_purl": 1.0,
     "licenses": {
+      "has_license": true,
+      "valid_licenses": 91,
+      "percentage_valid_license_id": 0.8
+    },
+    "is_schema_compliant": true,
+    "operating_system": {
+      "has_os": false,
+      "os_found": null
+    },
+    "sbom_tool": {
+      "has_tool": false,
+      "tools": null
+    },
+    "has_dependency_tree": false,
+    "quality_score": 0.69
+  },
+  {
+    "filename": "test/syft-sbom.json",
+    "purls": 229,
+    "has_purls": true,
+    "percentage_valid_purl": 1.0,
+    "licenses": {
+      "has_license": true,
+      "valid_licenses": 124,
+      "percentage_valid_license_id": 0.54
+    },
+    "is_schema_compliant": true,
+    "operating_system": {
+      "has_os": true,
+      "os_found": [
+        {
+          "os_name": "debian",
+          "os_version": "10"
+        }
+      ]
+    },
+    "sbom_tool": {
+      "has_tool": true,
+      "tools": []
+    },
+    "has_dependency_tree": false,
+    "quality_score": 0.78
+  },
+  {
+    "filename": "test/cyclonedx-bom.json",
+    "purls": 378,
+    "has_purls": true,
+    "percentage_valid_purl": 1.0,
+    "licenses": {
+      "has_license": true,
       "valid_licenses": 372,
       "percentage_valid_license_id": 0.98
     },
