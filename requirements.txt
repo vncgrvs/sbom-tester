@@ -11,7 +11,7 @@ emoji==1.7.0
 et-xmlfile==1.1.0
 flake8==4.0.1
 Flask==2.2.2
-idna==3.3
+idna==3.4
 importlib-metadata==5.1.0
 importlib-resources==5.10.2
 itsdangerous==2.1.2
