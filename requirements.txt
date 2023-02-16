@@ -40,5 +40,5 @@ tqdm==4.64.1
 typing_extensions==4.2.0
 uamqp==1.5.3
 urllib3==1.26.9
-Werkzeug==2.2.2
+Werkzeug==2.2.3
 zipp==3.11.0
