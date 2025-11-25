@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: sbom-tester
+  annotations:
+    github.com/project-slug: vncgrvs/sbom-tester
+spec:
+  type: other
+  lifecycle: unknown
+  owner: my-group
